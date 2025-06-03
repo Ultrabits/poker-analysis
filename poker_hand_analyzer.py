@@ -1,8 +1,8 @@
 import streamlit as st
-import openai
+from openai import OpenAI
 import tempfile
 
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 st.set_page_config(page_title="扑克AI手牌分析助手", layout="centered")
 st.title("🃏 扑克AI手牌分析助手")
@@ -27,11 +27,12 @@ if audio_file is not None:
             tmp_file_path = tmp_file.name
 
         try:
-            transcript = openai.Audio.transcribe(
-                model="whisper-1",
-                file=open(tmp_file_path, "rb")
-            )
-            transcribed_text = transcript["text"]
+            with open(tmp_file_path, "rb") as audio:
+                transcript = client.audio.transcriptions.create(
+                    model="whisper-1",
+                    file=audio
+                )
+            transcribed_text = transcript.text
             st.success("语音识别成功！")
             st.text_area("识别文本：", transcribed_text, height=150)
         except Exception as e:
@@ -52,7 +53,7 @@ if st.button("提交分析") and user_input.strip():
 请分步骤给出建议，并说明可能的更优选择。
 """
 
-            response = openai.ChatCompletion.create(
+            response = client.chat.completions.create(
                 model="gpt-4",
                 messages=[
                     {"role": "system", "content": "你是一位扑克策略分析专家。"},
@@ -62,7 +63,7 @@ if st.button("提交分析") and user_input.strip():
                 max_tokens=600
             )
 
-            result = response['choices'][0]['message']['content']
+            result = response.choices[0].message.content
             st.markdown("### 🧠 分析结果：")
             st.markdown(result)
 
