@@ -2,7 +2,7 @@ import streamlit as st
 import openai
 import tempfile
 
-openai.api_key = "your-api-key"
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 st.set_page_config(page_title="扑克AI手牌分析助手", layout="centered")
 st.title("🃏 扑克AI手牌分析助手")
