@@ -54,7 +54,7 @@ if st.button("提交分析") and user_input.strip():
 """
 
             response = client.chat.completions.create(
-                model="gpt-4",
+                model="gpt-3.5-turbo",
                 messages=[
                     {"role": "system", "content": "你是一位扑克策略分析专家。"},
                     {"role": "user", "content": prompt}
